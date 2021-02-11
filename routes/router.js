@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const {
-  getUsers, getProfile, getCards, getError,
-} = require('../controllers/controllers');
+const { getUsers, getProfile } = require('../controllers/users');
+const { getCards, getError } = require('../controllers/cards');
 
 router.get('/users', getUsers);
 
