@@ -1,14 +1,14 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "",
+  "description": "web-development student project",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Valeria Shegolkova <lera.shapranova@ya.ru>",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

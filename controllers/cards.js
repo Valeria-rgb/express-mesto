@@ -4,26 +4,43 @@ const getCards = (req, res) => {
   CardModel.find({})
     .populate('owner')
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => res.status(500).send({ message: 'Ошибка сервера!' }));
 };
 const postCard = (req, res) => {
   const { name, link } = req.body;
   const { _id } = req.user;
-  CardModel.create({ name, link, owner: _id })
+  CardModel.create({ name, link, owner: _id }, {
+    runValidators: true
+    })
     .then((card) => {
       res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные!' });
+      }
+      res.status(500).send({ message: 'Ошибка сервера!' });
+    })
 };
+
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
   CardModel.findByIdAndRemove(cardId, req.body)
+    .populate('owner')
+    .orFail(() => {
+      res.status(404).send({ message: 'Карточки с данным id не существует!' });
+    })
     .then((card) => {
       res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send(err));
-};
+    .catch((err) => {
+        if (err.name === 'CastError') {
+          res.status(400).send({ message: 'Переданы некорректные данные!' });
+        }
+        res.status(500).send({ message: 'Ошибка сервера!' });
+      })
+    };
 
 const putLike = (req, res) => {
   const { cardId } = req.params;
@@ -36,10 +53,18 @@ const putLike = (req, res) => {
     new: true,
   })
     .populate(['likes', 'owner'])
+    .orFail(() => {
+      res.status(404).send({ message: 'Карточки с данным id не существует!' });
+    })
     .then((card) => {
       res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные!' });
+      }
+      res.status(500).send({ message: 'Ошибка сервера!' });
+    })
 };
 
 const deleteLike = (req, res) => {
@@ -53,10 +78,18 @@ const deleteLike = (req, res) => {
     new: true,
   })
     .populate(['likes', 'owner'])
-    .then((card) => {
-      res.status(200).send(card);
+    .orFail(() => {
+      res.status(404).send({ message: 'Карточки с данным id не существует!' });
     })
-    .catch((err) => res.status(500).send(err));
+    .then((card) => {
+       res.status(200).send(card);
+     })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные!' });
+      }
+      res.status(500).send({ message: 'Ошибка сервера!' });
+    })
 };
 
 const getError = (req, res) => res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
