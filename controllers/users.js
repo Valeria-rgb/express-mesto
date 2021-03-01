@@ -3,7 +3,7 @@ const UserModel = require('../models/user');
 const getUsers = (req, res) => {
   UserModel.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ message: 'Ошибка сервера!' }));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера!' }));
 };
 
 const getProfile = (req, res) => {
@@ -20,7 +20,7 @@ const getProfile = (req, res) => {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
       }
       res.status(500).send({ message: 'Ошибка сервера!' });
-    })
+    });
 };
 
 const createProfile = (req, res) => {
@@ -28,13 +28,13 @@ const createProfile = (req, res) => {
   UserModel.create({ name, about, avatar })
     .then((user) => {
       res.status(200).send(user);
-      })
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
       }
       res.status(500).send({ message: 'Ошибка сервера!' });
-    })
+    });
 };
 
 const updateProfile = (req, res) => {
@@ -42,19 +42,19 @@ const updateProfile = (req, res) => {
   const { name, about } = req.body;
   UserModel.findByIdAndUpdate({ _id }, { name, about }, {
     runValidators: true,
-    new: true
+    new: true,
   })
     .orFail(() => {
       res.status(404).send({ message: 'Нет пользователя с таким id!' });
     })
     .then((user) => {
-      res.status(200).send(user)
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
       }
-      res.status(500).send({ message: 'Ошибка сервера!' })
+      res.status(500).send({ message: 'Ошибка сервера!' });
     });
 };
 
@@ -63,20 +63,20 @@ const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   UserModel.findByIdAndUpdate({ _id }, { avatar }, {
     runValidators: true,
-    new: true
+    new: true,
   })
     .orFail(() => {
       res.status(404).send({ message: 'Нет пользователя с таким id!' });
     })
     .then((user) => {
-      res.status(200).send(user)
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
       }
       res.status(500).send({ message: 'Ошибка сервера!' });
-    })
+    });
 };
 
 module.exports = {
