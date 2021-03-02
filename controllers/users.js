@@ -10,7 +10,9 @@ const getProfile = (req, res) => {
   const { userId } = req.params;
   UserModel.findById(userId)
     .orFail(() => {
-      res.status(404).send({ message: 'Нет пользователя с таким id!' });
+      const err = new Error('Профайл не найден!');
+      err.statusCode = 404;
+      throw err;
     })
     .then((user) => {
       res.status(200).send(user);
@@ -18,8 +20,11 @@ const getProfile = (req, res) => {
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь с данным id не найден' });
+      } else {
+        res.status(500).send({ message: 'Ошибка сервера!' });
       }
-      res.status(500).send({ message: 'Ошибка сервера!' });
     });
 };
 
@@ -32,8 +37,9 @@ const createProfile = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
+      } else {
+        res.status(500).send({ message: 'Ошибка сервера!' });
       }
-      res.status(500).send({ message: 'Ошибка сервера!' });
     });
 };
 
@@ -45,7 +51,9 @@ const updateProfile = (req, res) => {
     new: true,
   })
     .orFail(() => {
-      res.status(404).send({ message: 'Нет пользователя с таким id!' });
+      const err = new Error('Профайл не найден!');
+      err.statusCode = 404;
+      throw err;
     })
     .then((user) => {
       res.status(200).send(user);
@@ -53,8 +61,11 @@ const updateProfile = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь с данным id не найден' });
+      } else {
+        res.status(500).send({ message: 'Ошибка сервера!' });
       }
-      res.status(500).send({ message: 'Ошибка сервера!' });
     });
 };
 
@@ -66,7 +77,9 @@ const updateAvatar = (req, res) => {
     new: true,
   })
     .orFail(() => {
-      res.status(404).send({ message: 'Нет пользователя с таким id!' });
+      const err = new Error('Профайл не найден!');
+      err.statusCode = 404;
+      throw err;
     })
     .then((user) => {
       res.status(200).send(user);
@@ -74,8 +87,11 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные!' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь с данным id не найден' });
+      } else {
+        res.status(500).send({ message: 'Ошибка сервера!' });
       }
-      res.status(500).send({ message: 'Ошибка сервера!' });
     });
 };
 
